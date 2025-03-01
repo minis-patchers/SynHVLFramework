@@ -1,0 +1,11 @@
+{
+  "Nickname": "SynHVLFramework",
+  "Visibility": "Visible",
+  "OneLineDescription": "Race generator for HVL Framework SKSE",
+  "LongDescription": "Generates race generator for HVL Framework SKSE",
+  "PreferredAutoVersioning": "Default",
+  "RequiredMods": [],
+  "TargetedReleases": [
+    "SkyrimSE"
+  ]
+}
