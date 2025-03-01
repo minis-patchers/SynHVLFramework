@@ -80,6 +80,7 @@ public class Program
         {
             newVL.DefaultHairColors = new GenderedItem<IFormLinkGetter<IColorRecordGetter>>(vampireRace.DefaultHairColors.Male, vampireRace.DefaultHairColors.Female);
         }
+        newVL.BodyBipedObject = vampireRace.BodyBipedObject;
         newVL.ArmorRace.SetTo(Skyrim.Race.DefaultRace);
         newVL.SkeletalModel!.Female = vampireRace.SkeletalModel!.Female!.DeepCopy();
         newVL.SkeletalModel!.Male = vampireRace.SkeletalModel!.Male!.DeepCopy();
