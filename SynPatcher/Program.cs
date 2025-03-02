@@ -86,7 +86,8 @@ public class Program
             newVL.Eyes = [];
             newVL.Eyes.SetTo(vampireRace.Eyes);
         }
-        newVL.ArmorRace.SetTo(Skyrim.Race.DefaultRace);
+        newVL.ArmorRace.SetTo(vampireRace.ArmorRace);
+        newVL.MorphRace.SetTo(vampireRace.MorphRace);
         newVL.SkeletalModel!.Female = vampireRace.SkeletalModel!.Female!.DeepCopy();
         newVL.SkeletalModel!.Male = vampireRace.SkeletalModel!.Male!.DeepCopy();
         newVL.Height.Female = vampireRace.Height.Female;
