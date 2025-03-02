@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Synthesis;
 using Newtonsoft.Json;
 using Noggog;
 using SynPatcher.Types;
+using SynPatcher.Types.Ini;
 
 namespace SynPatcher;
 
@@ -89,8 +90,32 @@ public class Program
         newVL.BehaviorGraph.Female = vanillaVL.BehaviorGraph?.Female?.DeepCopy();
         newVL.BehaviorGraph.Male = vanillaVL.BehaviorGraph?.Male?.DeepCopy();
         newVL.Flags |= Race.Flag.NoKnockdowns;
-
     }
+
+    public static void UpdateInis(string dfp, List<RaceConf> races)
+    {
+        var facemorphpath = Path.Join(dfp, "meshes", "actors", "character", "facegenmorphs");
+        foreach (var file in Directory.EnumerateDirectories(facemorphpath))
+        {
+            if (file.EndsWith("esp", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("esl", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith("esm", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var raceIni = Path.Join(file, "races.ini");
+                Console.WriteLine($"Updating ini {raceIni}");
+                if (File.Exists(raceIni))
+                {
+                    using var ini = new IniFile(raceIni);
+                    foreach (var rc in races)
+                    {
+                        if (ini.KeyExists(rc.VampireRace))
+                        {
+                            ini.Write(rc.VLRace, ini.Read(rc.VampireRace));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
     {
         List<RaceConf> races = [];
@@ -114,6 +139,12 @@ public class Program
         }
         var txt = JsonConvert.SerializeObject(races);
         File.WriteAllText(Path.Join(state.DataFolderPath, "SKSE", "Plugins", "VLRP", "Synthesis.json"), txt);
+        var vraces = JsonConvert.DeserializeObject<List<RaceConf>>(File.ReadAllText(Path.Join(state.DataFolderPath, "SKSE", "Plugins", "VLRP", "IncludedRaces.json")));
+        if(vraces != null) {
+            races.AddRange(vraces);
+        }
+        races.DistinctBy(x=>x.VampireRace);
+        UpdateInis(state.DataFolderPath, races);
         var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToList();
         foreach (var race in UpdateRaces)
         {
