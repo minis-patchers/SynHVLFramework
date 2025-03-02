@@ -82,6 +82,10 @@ public class Program
             newVL.DefaultHairColors = new GenderedItem<IFormLinkGetter<IColorRecordGetter>>(vampireRace.DefaultHairColors.Male, vampireRace.DefaultHairColors.Female);
         }
         // Manual Fixes
+        if(vampireRace.Eyes != null) {
+            newVL.Eyes = [];
+            newVL.Eyes.SetTo(vampireRace.Eyes);
+        }
         newVL.ArmorRace.SetTo(Skyrim.Race.DefaultRace);
         newVL.SkeletalModel!.Female = vampireRace.SkeletalModel!.Female!.DeepCopy();
         newVL.SkeletalModel!.Male = vampireRace.SkeletalModel!.Male!.DeepCopy();
@@ -143,7 +147,7 @@ public class Program
         if(vraces != null) {
             races.AddRange(vraces);
         }
-        races.DistinctBy(x=>x.VampireRace);
+        races = [.. races.DistinctBy(x=>x.VampireRace)];
         UpdateInis(state.DataFolderPath, races);
         var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToList();
         foreach (var race in UpdateRaces)
