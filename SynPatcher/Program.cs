@@ -82,7 +82,8 @@ public class Program
             newVL.DefaultHairColors = new GenderedItem<IFormLinkGetter<IColorRecordGetter>>(vampireRace.DefaultHairColors.Male, vampireRace.DefaultHairColors.Female);
         }
         // Manual Fixes
-        if(vampireRace.Eyes != null) {
+        if (vampireRace.Eyes != null)
+        {
             newVL.Eyes = [];
             newVL.Eyes.SetTo(vampireRace.Eyes);
         }
@@ -143,12 +144,27 @@ public class Program
             }
         }
         var txt = JsonConvert.SerializeObject(races);
-        File.WriteAllText(Path.Join(state.DataFolderPath, "SKSE", "Plugins", "VLRP", "Synthesis.json"), txt);
-        var vraces = JsonConvert.DeserializeObject<List<RaceConf>>(File.ReadAllText(Path.Join(state.DataFolderPath, "SKSE", "Plugins", "VLRP", "IncludedRaces.json")));
-        if(vraces != null) {
-            races.AddRange(vraces);
+        var path = Path.Join(state.DataFolderPath, "SKSE", "Plugins", "VLRP");
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+            Console.WriteLine("[WARN] Directory created");
         }
-        races = [.. races.DistinctBy(x=>x.VampireRace)];
+        File.WriteAllText(Path.Join(path, "Synthesis.json"), txt);
+        var vanillapath = Path.Join(state.DataFolderPath, "SKSE", "Plugins", "VLRP", "IncludedRaces.json");
+        if (File.Exists(vanillapath))
+        {
+            var vraces = JsonConvert.DeserializeObject<List<RaceConf>>(File.ReadAllText(vanillapath));
+            if (vraces != null)
+            {
+                races.AddRange(vraces);
+            }
+        }
+        else
+        {
+            Console.WriteLine("[WARN] IncludedRaces.json not found");
+        }
+        races = [.. races.DistinctBy(x => x.VampireRace)];
         UpdateInis(state.DataFolderPath, races);
         var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToList();
         foreach (var race in UpdateRaces)
