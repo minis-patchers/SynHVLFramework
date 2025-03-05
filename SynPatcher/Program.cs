@@ -127,7 +127,7 @@ public class Program
         List<RaceConf> races = [];
         var VLController = FormKey.Factory("000010:VLRP.esp");
         var vanillaVL = Dawnguard.Race.DLC1VampireBeastRace.Resolve(state.LinkCache);
-        var vampireRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.EditorID != "DLC1VampireBeastRace" && !x.EditorID!.Contains("VampireLord") && !ignoredMods.Contains(x.FormKey.ModKey)).Where(x => x.HasKeyword("Vampire", state.LinkCache)).ToList();
+        var vampireRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.EditorID != "DLC1VampireBeastRace" && !x.EditorID!.Contains("VampireLord") && !ignoredMods.Contains(x.FormKey.ModKey)).Where(x => x.HasKeyword("Vampire", state.LinkCache)).ToHashSet();
         foreach (var vampireRace in vampireRaces)
         {
             if (!vampireRaces.Where(x => x.EditorID == $"{vampireRace.EditorID}Lord").Any())
@@ -166,7 +166,7 @@ public class Program
         }
         races = [.. races.DistinctBy(x => x.VampireRace)];
         UpdateInis(state.DataFolderPath, races);
-        var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToList();
+        var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToHashSet();
         foreach (var race in UpdateRaces)
         {
             Console.WriteLine($"Updating {race.EditorID}");
