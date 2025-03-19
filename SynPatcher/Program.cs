@@ -31,7 +31,7 @@ public class Program
             EditorID = false,
             FormKey = false
         });
-        newVL.DeepCopyIn(vanillaVL, new Race.TranslationMask(false)
+        newVL.DeepCopyIn(vanillaVL, new Race.TranslationMask(false, false)
         {
             AccelerationRate = true,
             ActorEffect = true,
@@ -87,7 +87,6 @@ public class Program
             newVL.Eyes = [];
             newVL.Eyes.SetTo(vampireRace.Eyes);
         }
-        newVL.ArmorRace.SetTo(vampireRace.ArmorRace);
         newVL.MorphRace.SetTo(vampireRace.MorphRace);
         newVL.SkeletalModel!.Female = vampireRace.SkeletalModel!.Female!.DeepCopy();
         newVL.SkeletalModel!.Male = vampireRace.SkeletalModel!.Male!.DeepCopy();
