@@ -8,7 +8,6 @@ using Mutagen.Bethesda.Synthesis;
 using Newtonsoft.Json;
 using Noggog;
 using SynPatcher.Types;
-using SynPatcher.Types.Ini;
 
 namespace SynPatcher;
 

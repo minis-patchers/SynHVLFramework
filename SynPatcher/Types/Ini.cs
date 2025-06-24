@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SynPatcher.Types.Ini;
+namespace SynPatcher.Types;
 class IniFile : IDisposable
 {
     string iniFile;
