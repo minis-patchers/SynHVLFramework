@@ -14,7 +14,7 @@ namespace SynPatcher;
 public class Program
 {
     static Lazy<Settings> lazySettings = new();
-    static HashSet<ModKey> ignoredMods => lazySettings.Value.ignoredMods;
+    static Settings Config => lazySettings.Value;
     public static async Task<int> Main(string[] args)
     {
         return await SynthesisPipeline.Instance
@@ -123,9 +123,12 @@ public class Program
     public static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
     {
         List<RaceConf> races = [];
-        var VLController = FormKey.Factory("000010:VLRP.esp");
+        if (!state.LoadOrder.ListsMod("VLRP.esp", true))
+        {
+            Config.ignoredMods.Remove(Skyrim.ModKey);
+        }
         var vanillaVL = Dawnguard.Race.DLC1VampireBeastRace.Resolve(state.LinkCache);
-        var vampireRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.EditorID != "DLC1VampireBeastRace" && !x.EditorID!.Contains("VampireLord") && !ignoredMods.Contains(x.FormKey.ModKey)).Where(x => x.HasKeyword("Vampire", state.LinkCache)).ToHashSet();
+        var vampireRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.EditorID != "DLC1VampireBeastRace" && !x.EditorID!.Contains("VampireLord") && !Config.ignoredMods.Contains(x.FormKey.ModKey)).Where(x => x.HasKeyword("Vampire", state.LinkCache)).ToHashSet();
         foreach (var vampireRace in vampireRaces)
         {
             if (!vampireRaces.Where(x => x.EditorID == $"{vampireRace.EditorID}Lord").Any())
@@ -138,7 +141,10 @@ public class Program
                 });
                 var newVL = state.PatchMod.Races.AddNew($"{vampireRace.EditorID}Lord");
                 PatchRace(newVL, vanillaVL, vampireRace);
-                newVL.ActorEffect!.Add(VLController);
+                if (!Config.controller.IsNull)
+                {
+                    newVL.ActorEffect!.Add(Config.controller.AsNullable());
+                }
             }
         }
         var txt = JsonConvert.SerializeObject(races);
@@ -158,20 +164,23 @@ public class Program
                 races.AddRange(vraces);
             }
         }
-        else
-        {
-            Console.WriteLine("[WARN] IncludedRaces.json not found");
-        }
         races = [.. races.DistinctBy(x => x.VampireRace)];
         UpdateInis(state.DataFolderPath, races);
-        var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToHashSet();
-        foreach (var race in UpdateRaces)
+        if (state.LoadOrder.ListsMod("VLRP.esp", true))
         {
-            Console.WriteLine($"Updating {race.EditorID}");
-            var newVL = state.PatchMod.Races.GetOrAddAsOverride(race);
-            var vampireRace = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.EditorID == newVL.EditorID!.Replace("Lord", "")).First();
-            PatchRace(newVL, vanillaVL, vampireRace);
-            newVL.ActorEffect!.Add(VLController);
+            //Update vanilla if VLRP.esp is installed
+            var UpdateRaces = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.FormKey.ModKey == "VLRP.esp").ToHashSet();
+            foreach (var race in UpdateRaces)
+            {
+                Console.WriteLine($"Updating {race.EditorID}");
+                var newVL = state.PatchMod.Races.GetOrAddAsOverride(race);
+                var vampireRace = state.LoadOrder.PriorityOrder.Race().WinningOverrides().Where(x => x.EditorID == newVL.EditorID!.Replace("Lord", "")).First();
+                PatchRace(newVL, vanillaVL, vampireRace);
+                if (!Config.controller.IsNull)
+                {
+                    newVL.ActorEffect!.Add(Config.controller.AsNullable());
+                }
+            }
         }
     }
 }

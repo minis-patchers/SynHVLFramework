@@ -1,0 +1,7 @@
+{
+  "controller": "000010:VLRP.esp",
+  "ignoredMods": [
+    "Skyrim.esm",
+    "VLRP.esp"
+  ]
+}
