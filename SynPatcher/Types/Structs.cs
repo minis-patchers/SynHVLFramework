@@ -1,7 +1,7 @@
-using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Plugins;
 
 namespace SynPatcher.Types;
+
 public struct RaceConf
 {
     public string VampireRace;
@@ -9,9 +9,5 @@ public struct RaceConf
 }
 public class Settings
 {
-    public IFormLinkGetter<ISpellRecordGetter> controller = FormLink<ISpellRecordGetter>.Null;
-    public HashSet<ModKey> ignoredMods = [
-        "Skyrim.esm",
-        "VLRP.esp"
-    ];
+    public HashSet<ModKey> ignoredMods = [];
 }
