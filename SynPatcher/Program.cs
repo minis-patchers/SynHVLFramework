@@ -86,7 +86,6 @@ public class Program
             newVL.Eyes = [];
             newVL.Eyes.SetTo(vampireRace.Eyes);
         }
-        newVL.ArmorRace.SetTo(vampireRace);
         newVL.MorphRace.SetTo(vampireRace);
         newVL.SkeletalModel!.Female = vampireRace.SkeletalModel!.Female!.DeepCopy();
         newVL.SkeletalModel!.Male = vampireRace.SkeletalModel!.Male!.DeepCopy();
